@@ -1,22 +1,22 @@
-GOHOSTOS:=$(shell go env GOHOSTOS)
-GOPATH:=$(shell go env GOPATH)
-VERSION=$(shell git describe --tags --always)
+GOHOSTOS := $(shell go env GOHOSTOS)
+GOPATH := $(shell go env GOPATH)
+VERSION := $(shell git describe --tags --always)
 
 ifeq ($(GOHOSTOS), windows)
-	#the `find.exe` is different from `find` in bash/shell.
-	#to see https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/find.
-	#changed to use git-bash.exe to run find cli or other cli friendly, caused of every developer has a Git.
-	#Git_Bash= $(subst cmd\,bin\bash.exe,$(dir $(shell where git)))
-	Git_Bash=$(subst \,/,$(subst cmd\,bin\bash.exe,$(dir $(shell where git))))
-	INTERNAL_PROTO_FILES=$(shell $(Git_Bash) -c "find internal -name *.proto")
-	API_PROTO_FILES=$(shell $(Git_Bash) -c "find api -name *.proto")
+	# 在 Windows 系统上设置 Git_Bash 路径并转换分隔符
+	Git_Bash := $(subst \,/,$(subst cmd\,bin\bash.exe,$(dir $(shell where git))))
+
+	# 使用 Git Bash 的 find 命令查找 proto 文件
+	INTERNAL_PROTO_FILES := $(shell $(Git_Bash) -c "find internal -name '*.proto'")
+	API_PROTO_FILES := $(shell $(Git_Bash) -c "find api -name '*.proto'")
 else
-	INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
-	API_PROTO_FILES=$(shell find api -name *.proto)
+	# 非 Windows 系统直接使用 find 命令
+	INTERNAL_PROTO_FILES := $(shell find internal -name '*.proto')
+	API_PROTO_FILES := $(shell find api -name '*.proto')
 endif
 
 .PHONY: init
-# init env
+# 初始化环境
 init:
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
@@ -26,8 +26,7 @@ init:
 	go install github.com/google/wire/cmd/wire@latest
 
 .PHONY: config
-# generate internal proto
-
+# 生成 internal proto
 config:
 	protoc --proto_path=./internal \
 	       --proto_path=./third_party \
@@ -35,7 +34,7 @@ config:
 	       $(INTERNAL_PROTO_FILES)
 
 .PHONY: api
-# generate api proto
+# 生成 api proto
 api:
 	protoc --proto_path=./api \
 	       --proto_path=./third_party \
@@ -46,25 +45,22 @@ api:
 	       $(API_PROTO_FILES)
 
 .PHONY: build
-# build
+# 编译
 build:
 	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
 
 .PHONY: generate
-# generate
+# 生成
 generate:
 	go mod tidy
 	go get github.com/google/wire/cmd/wire@latest
 	go generate ./...
 
 .PHONY: all
-# generate all
-all:
-	make api;
-	make config;
-	make generate;
+# 生成所有文件
+all: api config generate
 
-# show help
+# 帮助信息
 help:
 	@echo ''
 	@echo 'Usage:'
@@ -80,5 +76,10 @@ help:
 		} \
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
+
+.PHONY: print
+# 打印 Git_Bash 变量（用于调试）
+print:
+	$(info Git_Bash=$(Git_Bash))
 
 .DEFAULT_GOAL := help

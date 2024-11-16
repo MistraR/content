@@ -12,17 +12,21 @@ type contentRepo struct {
 }
 
 // NewGreeterRepo .
-func NewContentRepo(data *Data, logger log.Logger) biz.GreeterRepo {
-	return &greeterRepo{
+func NewContentRepo(data *Data, logger log.Logger) biz.ContentRepo {
+	return &contentRepo{
 		data: data,
 		log:  log.NewHelper(logger),
 	}
 }
+func (receiver *contentRepo) Create(ctx context.Context, content *biz.Content) error {
 
-func (c *contentRepo) Create(ctx context.Context, content *biz.ContentRepo) error {
-	c.log.Infof("contentRepo Create content = %+v", content)
 	return nil
 }
-func (r *contentRepo) Save(ctx context.Context, g *biz.Content) (*biz.Content, error) {
-	return g, nil
-}
+
+//func (c *contentRepo) Create(ctx context.Context, content *biz.ContentRepo) error {
+//	c.log.Infof("contentRepo Create content = %+v", content)
+//	return nil
+//}
+//func (r *contentRepo) Save(ctx context.Context, g *biz.Content) (*biz.Content, error) {
+//	return g, nil
+//}

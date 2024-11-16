@@ -1,7 +1,8 @@
 package biz
 
 import (
-	"golang.org/x/net/context"
+	"context"
+	"github.com/go-kratos/kratos/v2/log"
 	"time"
 )
 
@@ -22,5 +23,19 @@ type Content struct {
 
 type ContentRepo interface {
 	Create(context.Context, *Content) error
-	Save(context.Context, *Content) (*Content, error)
+}
+
+type Contentcase struct {
+	repo ContentRepo
+	log  *log.Helper
+}
+
+func NewContentcase(repo ContentRepo, logger log.Logger) *Contentcase {
+	return &Contentcase{repo: repo, log: log.NewHelper(logger)}
+}
+
+// CreateGreeter creates a Greeter, and returns the new Greeter.
+func (uc *Contentcase) CreateContent(ctx context.Context, g *Content) error {
+	uc.log.WithContext(ctx).Infof("CreateContent: %v", g.Title)
+	return uc.repo.Create(ctx, g)
 }

@@ -12,15 +12,3 @@ service App {
 
 message CreateContentRequest {}
 message CreateContentReply {}
-
-message UpdateAppRequest {}
-message UpdateAppReply {}
-
-message DeleteAppRequest {}
-message DeleteAppReply {}
-
-message GetAppRequest {}
-message GetAppReply {}
-
-message ListAppRequest {}
-message ListAppReply {}

@@ -10,5 +10,7 @@ service App {
 	rpc CreateContent (CreateContentRequest) returns (CreateContentReply);
 }
 
-message CreateContentRequest {}
+message CreateContentRequest {
+
+}
 message CreateContentReply {}

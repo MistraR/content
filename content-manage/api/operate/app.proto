@@ -11,6 +11,24 @@ service App {
 }
 
 message CreateContentRequest {
+		Content content=1;
 
 }
 message CreateContentReply {}
+
+
+message Content{
+	int64 id=1;
+	string title=2;
+	string video_url=3;
+	string author=4;
+	string description=5;
+	string thumbnail=6;
+	string category=7;
+	int64 duration=8;
+	string resolution=9;
+	int64 file_size=10;
+	string format=11;
+	int64 quality=12;
+	int64 approval_status=13;
+}

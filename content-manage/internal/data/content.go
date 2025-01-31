@@ -18,8 +18,9 @@ func NewContentRepo(data *Data, logger log.Logger) biz.ContentRepo {
 		log:  log.NewHelper(logger),
 	}
 }
-func (receiver *contentRepo) Create(ctx context.Context, content *biz.Content) error {
 
+func (receiver *contentRepo) Create(ctx context.Context, content *biz.Content) error {
+	receiver.log.Infof("contentRepo create content = %+v", content)
 	return nil
 }
 

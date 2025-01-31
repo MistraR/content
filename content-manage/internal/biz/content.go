@@ -17,25 +17,25 @@ type Content struct {
 	Resolution     string        `json:"resolution"`                     //分辨率
 	FileSize       int64         `json:"file_size"`                      //文件大小
 	Format         string        `json:"format"`                         //格式
-	Quality        int           `json:"quality"`                        //视频质量
-	ApprovalStatus int           `json:"approval_status"`                //审核状态
+	Quality        int64         `json:"quality"`                        //视频质量
+	ApprovalStatus int64         `json:"approval_status"`                //审核状态
 }
 
 type ContentRepo interface {
 	Create(context.Context, *Content) error
 }
 
-type Contentcase struct {
+type ContentUsecase struct {
 	repo ContentRepo
 	log  *log.Helper
 }
 
-func NewContentcase(repo ContentRepo, logger log.Logger) *Contentcase {
-	return &Contentcase{repo: repo, log: log.NewHelper(logger)}
+func NewContentcase(repo ContentRepo, logger log.Logger) *ContentUsecase {
+	return &ContentUsecase{repo: repo, log: log.NewHelper(logger)}
 }
 
 // CreateGreeter creates a Greeter, and returns the new Greeter.
-func (uc *Contentcase) CreateContent(ctx context.Context, g *Content) error {
+func (uc *ContentUsecase) CreateContent(ctx context.Context, g *Content) error {
 	uc.log.WithContext(ctx).Infof("CreateContent: %v", g.Title)
 	return uc.repo.Create(ctx, g)
 }

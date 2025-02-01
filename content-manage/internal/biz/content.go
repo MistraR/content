@@ -7,6 +7,7 @@ import (
 )
 
 type Content struct {
+	Id             int64         `json:"id"`                             //内容标题
 	Title          string        `json:"title" binding:"required"`       //内容标题
 	Description    string        `json:"description" binding:"required"` //描述
 	Author         string        `json:"author" binding:"required"`      //作者
@@ -23,6 +24,7 @@ type Content struct {
 
 type ContentRepo interface {
 	Create(context.Context, *Content) error
+	Update(context.Context, int64, *Content) error
 }
 
 type ContentUsecase struct {
@@ -38,4 +40,9 @@ func NewContentcase(repo ContentRepo, logger log.Logger) *ContentUsecase {
 func (uc *ContentUsecase) CreateContent(ctx context.Context, g *Content) error {
 	uc.log.WithContext(ctx).Infof("CreateContent: %v", g.Title)
 	return uc.repo.Create(ctx, g)
+}
+
+func (uc *ContentUsecase) UpdateContent(ctx context.Context, g *Content) error {
+	uc.log.WithContext(ctx).Infof("UpdateContent: %v", g.Title)
+	return uc.repo.Update(ctx, g.Id, g)
 }

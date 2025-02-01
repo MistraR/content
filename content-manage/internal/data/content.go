@@ -3,13 +3,87 @@ package data
 import (
 	"content-manage/internal/biz"
 	"context"
+	"errors"
 	"github.com/go-kratos/kratos/v2/log"
+	"gorm.io/gorm"
 	"time"
 )
 
 type contentRepo struct {
 	data *Data
 	log  *log.Helper
+}
+
+func (receiver *contentRepo) Find(ctx context.Context, param *biz.FindParams) ([]*biz.Content, int64, error) {
+	query := receiver.data.db.Model(&ContentDetail{})
+	if param.ID != 0 {
+		query = query.Where("id=?", param.ID)
+	}
+	if param.Author != "" {
+		query = query.Where("author=?", param.Author)
+	}
+	if param.Title != "" {
+		query = query.Where("title=?", param.Title)
+	}
+	var total int64
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	var page, pageSize = 1, 10
+	if param.Page > 0 {
+		page = param.Page
+	}
+	if param.PageSize > 0 {
+		pageSize = param.PageSize
+	}
+	offset := (page - 1) * pageSize
+	var data []*ContentDetail
+	var result []*biz.Content
+	if err := query.Offset(offset).Limit(pageSize).Find(&data).Error; err != nil {
+		return nil, 0, err
+	}
+	for _, r := range data {
+		result = append(result, &biz.Content{
+			Id:             r.ID,
+			Title:          r.Title,
+			VideoURL:       r.VideoURL,
+			Author:         r.Author,
+			Description:    r.Description,
+			Thumbnail:      r.Thumbnail,
+			Category:       r.Category,
+			Duration:       r.Duration,
+			Resolution:     r.Resolution,
+			FileSize:       r.FileSize,
+			Format:         r.Format,
+			Quality:        r.Quality,
+			ApprovalStatus: r.ApprovalStatus,
+		})
+	}
+	return result, total, nil
+}
+
+func (receiver *contentRepo) IsExist(ctx context.Context, id int64) (bool, error) {
+	db := receiver.data.db
+	var detail ContentDetail
+	err := db.Where("id =?", id).First(&detail).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, nil
+	}
+	if err != nil {
+		receiver.log.WithContext(ctx).Errorf("ContentDao isExist = %v", err)
+		return false, err
+	}
+	return true, nil
+}
+
+func (receiver *contentRepo) Delete(ctx context.Context, id int64) error {
+	db := receiver.data.db
+	err := db.Where("id =?", id).Delete(&ContentDetail{}).Error
+	if err != nil {
+		receiver.log.Error("delete error =%v", err)
+		return err
+	}
+	return nil
 }
 
 func (receiver *contentRepo) Update(ctx context.Context, id int64, content *biz.Content) error {

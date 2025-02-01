@@ -21,6 +21,7 @@ func main() {
 	}
 	defer conn.Close()
 	client := operate.NewAppClient(conn)
+
 	//reply, err := client.CreateContent(context.Background(), &operate.CreateContentRequest{
 	//	Content: &operate.Content{
 	//		Title:       "Mistra",
@@ -33,17 +34,30 @@ func main() {
 	//	log.Fatal(err)
 	//}
 	//log.Printf("[grpc] CreateContent #{reply} \n", reply)
-	reply, err := client.UpdateContent(context.Background(), &operate.UpdateContentRequest{
-		Content: &operate.Content{
-			Id:          1,
-			Title:       "Mistra",
-			VideoUrl:    "https://127.0.0.1:8000",
-			Author:      "Mistra Author",
-			Description: "test33333",
-		},
-	})
+
+	//reply, err := client.UpdateContent(context.Background(), &operate.UpdateContentRequest{
+	//	Content: &operate.Content{
+	//		Id:          1,
+	//		Title:       "Mistra",
+	//		VideoUrl:    "https://127.0.0.1:8000",
+	//		Author:      "Mistra Author",
+	//		Description: "test33333",
+	//	},
+	//})
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//log.Printf("[grpc] UpdateContent #{reply} \n", reply)
+
+	//reply, err := client.DeleteContent(context.Background(), &operate.DeleteContentRequest{Id: 2})
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//log.Printf("[grpc] DeleteContent #{reply} \n", reply)
+
+	reply, err := client.FindContent(context.Background(), &operate.FindContentRequest{Id: 1, Page: 1, PageSize: 1})
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("[grpc] UpdateContent #{reply} \n", reply)
+	log.Printf("[grpc] FindContent #{reply} \n", reply)
 }
